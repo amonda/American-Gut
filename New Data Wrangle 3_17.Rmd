@@ -54,7 +54,7 @@ otutax
 
 Now use merge_phyloseq to build a file in the proper format so it includes the information listed above. 
 ```{r}
-MD2 = merge_phyloseq(otutax, sam, tree)
+MD2 = merge_phyloseq(otutax, sam)
 ```
 
 
