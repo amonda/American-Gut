@@ -1,0 +1,64 @@
+---
+title: "Starting Over Data Wrangle 3_17"
+author: "Alyssa Monda"
+date: "3/17/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Import Data
+Assign file pathways as value names to use in the next R Code chunk. 
+```{r}
+rich_dense_biom<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.biom")
+treefilename<- ("~/Desktop/Big Data/American-Gut/data/AG/BeyondBacteria/AmericanGutMetaphlanWGS.taxonomy.tree")
+meta<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.txt")
+```
+
+Use Import_Biom command to import the biom file, and tanxonomy tree. 
+```{r}
+import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
+#import_biom(rich_dense_biom, treefilename, parseFunction=parse_taxonomy_greengenes) tree file name should be included but resulted in an error and failed to import?
+```
+
+Store import as myData file to use this data object in downstream data manipulations and analysis. 
+
+```{r}
+myData = import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
+myData
+```
+Did it work?No.
+```{r}
+plot_bar(myData, fill="Genus")
+```
+Import metadata
+```{r}
+library(readxl)
+Ag_MetaData1k_Trimmed <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trimmed.xlsx")
+View(Ag_MetaData1k_Trimmed)
+meta<-(Ag_MetaData1k_Trimmed)
+```
+
+#Split apart and merge data into proper format
+```{r}
+data(myData)
+#tree = phy_tree("~/Desktop/Big Data/American-Gut/data/AG/BeyondBacteria/AmericanGutMetaphlanWGS.taxonomy.tree")
+tax  = tax_table(myData)
+otu  = otu_table(myData)
+sam  = sample_data(meta)
+otutax = phyloseq(otu, tax)
+otutax
+```
+
+Now use merge_phyloseq to build a file in the proper format so it includes the information listed above. 
+```{r}
+MD2 = merge_phyloseq(otutax, sam, tree)
+```
+
+
+
+
+
+
