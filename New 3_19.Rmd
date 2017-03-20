@@ -1,0 +1,35 @@
+---
+title: "After I burned it down 3/19"
+author: "Alyssa Monda"
+date: "3/19/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Downloaded packages 
+library(phyloseq)
+library(dada2)
+library(ggplot2)
+library(biom)
+library(devtools)
+library(knitr)
+library(mixOmics)
+library(tidyverse)
+library(vegan)
+library(mixOmics)
+library(readxl)
+
+source('http://bioconductor.org/biocLite.R')
+biocLite('phyloseq')
+devtools::install_github("biomformat", "joey711")
+```
+
+
+
+```{r}
+
+
+
+```

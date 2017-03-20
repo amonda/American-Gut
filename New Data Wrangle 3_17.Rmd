@@ -7,6 +7,9 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(phyloseq)
+library(dada2)
+library(ggplot2)
 ```
 
 ## Import Data
@@ -104,5 +107,17 @@ Ps
 
 
 
-
+```{r}
+library(readr)
+Sample_data <- (Meta)
+sam_cov <- as.data.frame(sample_data)
+rownames(sam_cov) <- sam_cov$SampleID
+sd <- sample_data(sam_cov)
+sample_names(sd)
+otus <- otu_table(goods, taxa_are_rows = TRUE)
+sample_names(otus)
+tt <- tax_table(taxonomy)
+ps <- phyloseq(otus, sd, tt)
+Ps
+```
 
