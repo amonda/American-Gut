@@ -92,26 +92,25 @@ I was getting the following error when I went to create the phyloseq object:
 I figured that it must have something to do with the sample data matrix that I was importing, and eventually figured out that it had to have “rownames” that were the same as the otu_table rownames. The following is my bit of code:
 
 ```{r}
-library(readr)
-sample_data <- read_csv("~/Desktop/MYSEQFILES/sample_data.csv")
-sam_cov <- as.data.frame(sample_data)
-rownames(sam_cov) <- sam_cov$ID
-sd <- sample_data(sam_cov)
-sample_names(sd)
-otus <- otu_table(seqtab.nochim, taxa_are_rows = FALSE)
-sample_names(otus)
-tt <- tax_table(taxa)
-ps <- phyloseq(otus, sd, tt)
-Ps
-```
+#Origina
+#library(readr)
+#sample_data <- read_csv("~/Desktop/MYSEQFILES/sample_data.csv")
+#sam_cov <- as.data.frame(sample_data)
+#rownames(sam_cov) <- sam_cov$ID
+#sd <- sample_data(sam_cov)
+#sample_names(sd)
+#otus <- otu_table(seqtab.nochim, taxa_are_rows = FALSE)
+#sample_names(otus)
+#tt <- tax_table(taxa)
+#ps <- phyloseq(otus, sd, tt)
+#Ps
 
 
-
-```{r}
+#My rewrite for big data set but it still results in error, won't write sd
 library(readr)
 Sample_data <- (Meta)
 sam_cov <- as.data.frame(sample_data)
-rownames(sam_cov) <- sam_cov$SampleID
+rownames(sam_cov) <- sam_cov()$#SampleID
 sd <- sample_data(sam_cov)
 sample_names(sd)
 otus <- otu_table(goods, taxa_are_rows = TRUE)
@@ -120,4 +119,5 @@ tt <- tax_table(taxonomy)
 ps <- phyloseq(otus, sd, tt)
 Ps
 ```
+
 

@@ -25,11 +25,56 @@ source('http://bioconductor.org/biocLite.R')
 biocLite('phyloseq')
 devtools::install_github("biomformat", "joey711")
 ```
-
-
-
+##Set File Paths 
 ```{r}
-
-
-
+rich_dense_biom<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.biom")
+treefilename<- ("~/Desktop/Big Data/American-Gut/data/AG/BeyondBacteria/AmericanGutMetaphlanWGS.taxonomy.tree")
+meta<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.txt")
 ```
+
+##Import Data
+Import Meta Data
+```{r}
+meta1k <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trimmed.xlsx")
+```
+
+Import BIOM file
+```{r}
+#Data downloaded from ftp://ftp.microbio.me/AmericanGut/latest/04-meta/ag-gg-100nt.biom
+dat <- read_biom(rich_dense_biom)
+
+#Or
+#import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
+# original command ->import_biom(rich_dense_biom, treefilename, parseFunction=parse_taxonomy_greengenes) tree file name should be included but resulted in an error and failed to import?
+```
+
+Split biom Flie into two separate data tables, one for OTU and one for taxonomy. 
+```{r}
+#You can't go straight from a "sparse Matrix" to a data frame! 
+otu_table <- as.data.frame(as.matrix(biom_data(dat)))
+tax_table <- observation_metadata(dat)
+```
+
+View first 10 observations of OTU and Taxonomy tables.
+```{r}
+head(otu_table[,1:10])
+head(tax_table[,1:10]) #taxonomy results in error--may be source of error in merging?
+```
+
+
+Code from Hertzberg
+```{r}
+library(readr)
+Sample_data <- (meta1k)
+sam_cov <- as.data.frame(sample_data)
+rownames(sam_cov) <- sam_cov$SampleID
+sd <- sample_data(sam_cov)
+sample_names(sd)
+otus <- otu_table(goods, taxa_are_rows = TRUE)
+sample_names(otus)
+tt <- tax_table(taxonomy)
+ps <- phyloseq(otus, sd, tt)
+Ps
+```
+```
+
