@@ -33,10 +33,30 @@ Did it work?No.
 ```{r}
 plot_bar(myData, fill="Genus")
 ```
-Import metadata
+
+Import metadata From Excel Instead b/c the other did not import as data but as values
+
+Export Values to csv file. 
+```{r}
+write.csv(otu, "~/Desktop/Big Data/American-Gut/data/AG/Otu1k.xlsx")
+
+write.csv(tax, "~/Desktop/Big Data/American-Gut/data/AG/Tax1k.xlsx")
+```
+
+
 ```{r}
 library(readxl)
 Ag_MetaData1k_Trimmed <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trimmed.xlsx")
+View(Ag_MetaData1k_Trimmed)
+meta<-(Ag_MetaData1k_Trimmed)
+
+#OTU
+OTU1k <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trimmed.xlsx")
+View(Ag_MetaData1k_Trimmed)
+meta<-(Ag_MetaData1k_Trimmed)
+
+#Taxonomy
+Taxonomy1k <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trimmed.xlsx")
 View(Ag_MetaData1k_Trimmed)
 meta<-(Ag_MetaData1k_Trimmed)
 ```
@@ -57,6 +77,30 @@ Now use merge_phyloseq to build a file in the proper format so it includes the i
 MD2 = merge_phyloseq(otutax, sam)
 ```
 
+
+
+Code from Hertzberg.... 
+I was getting the following error when I went to create the phyloseq object:
+
+“Error in validObject(.Object) : invalid class “phyloseq” object: 
+ Component sample names do not match.
+ Try sample_names()”
+
+I figured that it must have something to do with the sample data matrix that I was importing, and eventually figured out that it had to have “rownames” that were the same as the otu_table rownames. The following is my bit of code:
+
+```{r}
+library(readr)
+sample_data <- read_csv("~/Desktop/MYSEQFILES/sample_data.csv")
+sam_cov <- as.data.frame(sample_data)
+rownames(sam_cov) <- sam_cov$ID
+sd <- sample_data(sam_cov)
+sample_names(sd)
+otus <- otu_table(seqtab.nochim, taxa_are_rows = FALSE)
+sample_names(otus)
+tt <- tax_table(taxa)
+ps <- phyloseq(otus, sd, tt)
+Ps
+```
 
 
 
