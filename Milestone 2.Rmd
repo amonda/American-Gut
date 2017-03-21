@@ -24,12 +24,16 @@ library(ReporteRs)
 library(magrittr)
 ```
 ##Directions
-A working prototype of your project is due on Wednesday 15 March by 5:00 pm EDT. You will submit a PDF file. This document will contain two links; 1. a link to the Rmd file that created it in your GitHub repo, and 2. a link to the source of your original data. Please put your name on the first page of the document.
 
 For this milestone we expect that you will have acquired, cleaned, and explored your dataset. You will document these activities in your files. You will also explain in detail the components of your final analysis. If you have deviated from your original plans, please describe what is different and the reasons that have led to this. You will explain your workflow, that is, how you went from acquiring your data to getting (close to) an answer to your question. Are there ancillary questions that have arisen as you have gone through this process? What are they?
 
 As a ballpark number, this document should be about 10 pages of text, tables, and figures.
 
+##Change in Plans
+Originally I had described using a different dataset to investigate the relationship between butyrate producing taxa (BPT) of the gut microbiome and inflammatory conditions. After beginning the data wrangling process I discovered the variables within the dataset did not match up in a way that made answering my question possible. The majority of the samples were from the oral microbiome and very few individuals had a positive value for an inflammatory disease as well as a gut sample, most of the time they only had oral samples on these individuals. While looking for a new dataset I stumbled upon the data from American Gut and realized they had 3 variables relating to physical activity. 
+Although this may seem like a significant change in plans, my purpose for investigating the aforementioned data was to assess whether a relationship existed between BPT and chronic conditions, because there is an increase in BPT seen in animal models observing exercise and the gut microbiome. Little is known about the mechanisms involved in the relationship between exercise and reduction of inflammation. I hypothesize changes in the gut microbiome as one of the possible pathways for the anti-inflammatory effects of moderate intensity, routine, exercise. I knew this task would involve investing more time into cleaning and analyzing this data, its significance to my research interests made the additional effort worth it. To my knowledge there are only 3 studies published investigating the relationship between exercise and the gut microbiome. These studies have small sample sizes, and the methods are of varying quality. With the current plan to propose a longitudinal study to characterize the gut microbiome after participation in a routine, aerobic, exercise intervention for my dissertation, the data from this study will be a wonderful addition to my future proposal.
+
+##Study Aims
 
 ##Set File Paths 
 ```{r}
@@ -50,6 +54,7 @@ MetaIdeal <- read_excel("~/Desktop/Big Data Project- Ideal Meta Data Set.xlsx")
 
 Import BIOM file
 ```{r}
+#Data originally downloaded from ftp://ftp.microbio.me/AmericanGut/latest/04-meta/ag-gg-100nt.biom
 dat <- read_biom(rich_dense_biom)
 
 #Or
@@ -116,4 +121,34 @@ docx( ) %>%
                setZebraStyle( odd = "#DDDDDD", even = "#FFFFFF" ) ) %>%
      writeDoc(file = "~/Desktop/Extable1.docx")
 ```
+***Need to recode categories for variables, and modify code to delete test column and add a total. Figure out how to make continuous variables show mean and SD. 
+Also figure out how p value was calculated. 
 
+Below are explanations for real tables I would like to make. 
+
+Figure 1: Demographic Information by Exercise Frequency
+```{r}
+#Age, BMI, Race, Gender, Education, Region or country of Residence, chronic condition
+
+
+```
+
+
+Figure 2: Lifestyle habits by Exercise Frequency
+```{r}
+#Diet, Exercise location, pool, antibiotic, probiotic 
+
+
+```
+
+Figure 3: 
+
+
+##Ancillary Questions
+
+##References
+Put references for the exercise part for why I changed 
+
+
+
+Ther RMarkdown file used to create this document can be found in the repositor at <https://github.com/amonda/American-Gut>. The name of the file is "Milestone2.Rmd".
