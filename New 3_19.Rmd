@@ -40,7 +40,6 @@ meta1k <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trim
 
 Import BIOM file
 ```{r}
-#Data downloaded from ftp://ftp.microbio.me/AmericanGut/latest/04-meta/ag-gg-100nt.biom
 dat <- read_biom(rich_dense_biom)
 
 #Or

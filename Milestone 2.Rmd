@@ -1,0 +1,111 @@
+---
+title: "Milestone 2"
+author: "Alyssa Monda"
+date: "3/20/2017"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Downloaded packages 
+library(phyloseq)
+library(dada2)
+library(ggplot2)
+library(biom)
+library(devtools)
+library(knitr)
+library(mixOmics)
+library(tidyverse)
+library(vegan)
+library(mixOmics)
+library(readxl)
+library(tableone)
+library(ReporteRs)
+library(magrittr)
+library(biomformat)
+
+source('http://bioconductor.org/biocLite.R')
+biocLite('phyloseq')
+devtools::install_github("biomformat", "joey711")
+```
+##Directions
+A working prototype of your project is due on Wednesday 15 March by 5:00 pm EDT. You will submit a PDF file. This document will contain two links; 1. a link to the Rmd file that created it in your GitHub repo, and 2. a link to the source of your original data. Please put your name on the first page of the document.
+
+For this milestone we expect that you will have acquired, cleaned, and explored your dataset. You will document these activities in your files. You will also explain in detail the components of your final analysis. If you have deviated from your original plans, please describe what is different and the reasons that have led to this. You will explain your workflow, that is, how you went from acquiring your data to getting (close to) an answer to your question. Are there ancillary questions that have arisen as you have gone through this process? What are they?
+
+As a ballpark number, this document should be about 10 pages of text, tables, and figures.
+
+
+##Set File Paths 
+```{r}
+rich_dense_biom<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.biom")
+treefilename<- ("~/Desktop/Big Data/American-Gut/data/AG/BeyondBacteria/AmericanGutMetaphlanWGS.taxonomy.tree")
+meta<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.txt")
+```
+
+##Import Data
+Import Meta Data
+```{r}
+MetaIdeal <- read_excel("~/Desktop/Big Data Project- Ideal Meta Data Set.xlsx")
+#View(MetaIdeal)
+
+#For training turn this code on and the above off
+#meta1k <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trimmed.xlsx")
+```
+
+Import BIOM file
+```{r}
+dat <- read_biom(rich_dense_biom)
+
+#Or
+#import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
+# original command ->import_biom(rich_dense_biom, treefilename, parseFunction=parse_taxonomy_greengenes) tree file name should be included but resulted in an error and failed to import?
+```
+
+##Analysis of MetaData
+First I will analyze the demographics of the sample. 
+
+```{r}
+library(tableone)
+#Create a variable list which we want in Table 1
+listVars <- c(Age="AGE_YEARS", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
+
+list2Vars <- c(Age="AGE_YEARS", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
+
+ExFreq <-c(ExFreq= "EXERCISE_FREQUENCY")
+
+#Categorical Variables
+catVars <- c(Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
+
+#Continuous Variables
+contVars <- c(Age="AGE")
+
+#Would like to add chronic condition, but need to create a new category and combine all conditions 
+
+#Define categorical variables
+CreateCatTable(vars= catVars, data=MetaIdeal, includeNA = FALSE, test = TRUE,testApprox = chisq.test, argsApprox = list(correct = TRUE),
+  testExact = fisher.test, argsExact = list(workspace = 2 * 10^5),
+  smd = TRUE)
+
+#Total Population Table 1
+table1 <- CreateTableOne(vars = listVars, data = MetaIdeal, factorVars = catVars)
+table1
+```
+
+
+Create Table 1 for men and women and to compare their means and proportions to see if this is a more meaningful way to present the data. 
+```{r}
+# Create table by exercise frequency category 
+#Define categorical variables
+
+CreateTableOne(vars=list2Vars, strata=ExFreq, data=MetaIdeal, factorVars=catVars, includeNA = FALSE,
+  test = TRUE, testApprox = chisq.test, argsApprox = list(correct = TRUE),
+  testExact = fisher.test, argsExact = list(workspace = 2 * 10^5),
+  testNormal = oneway.test, argsNormal = list(var.equal = TRUE),
+  testNonNormal = kruskal.test, argsNonNormal = list(NULL), smd = TRUE)
+```
+
+
