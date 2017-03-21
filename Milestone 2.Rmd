@@ -141,8 +141,15 @@ Figure 2: Lifestyle habits by Exercise Frequency
 
 ```
 
-Figure 3: 
+Figure 3: Alpha Diversity
 
+Figure 4: 
+
+Figure 5: Beta Diversity By Exercise Frequency
+
+Figure 6: Beta Diversity By Exercise Location
+
+##Preliminary Synthesis/Discussion of Results
 
 ##Ancillary Questions
 
@@ -150,5 +157,5 @@ Figure 3:
 Put references for the exercise part for why I changed 
 
 
-
+##GitHub Repository
 Ther RMarkdown file used to create this document can be found in the repositor at <https://github.com/amonda/American-Gut>. The name of the file is "Milestone2.Rmd".
