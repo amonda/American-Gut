@@ -22,11 +22,6 @@ library(readxl)
 library(tableone)
 library(ReporteRs)
 library(magrittr)
-library(biomformat)
-
-source('http://bioconductor.org/biocLite.R')
-biocLite('phyloseq')
-devtools::install_github("biomformat", "joey711")
 ```
 ##Directions
 A working prototype of your project is due on Wednesday 15 March by 5:00 pm EDT. You will submit a PDF file. This document will contain two links; 1. a link to the Rmd file that created it in your GitHub repo, and 2. a link to the source of your original data. Please put your name on the first page of the document.
