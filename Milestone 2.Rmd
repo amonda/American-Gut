@@ -68,16 +68,16 @@ First I will analyze the demographics of the sample.
 ```{r}
 library(tableone)
 #Create a variable list which we want in Table 1
-listVars <- c(Age="AGE_YEARS", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+listVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
 Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
 
-list2Vars <- c(Age="AGE_YEARS", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+list2Vars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
 Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
 
 ExFreq <-c(ExFreq= "EXERCISE_FREQUENCY")
 
 #Categorical Variables
-catVars <- c(Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+catVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
 Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
 
 #Continuous Variables
@@ -101,11 +101,24 @@ Create Table 1 for men and women and to compare their means and proportions to s
 # Create table by exercise frequency category 
 #Define categorical variables
 
-CreateTableOne(vars=list2Vars, strata=ExFreq, data=MetaIdeal, factorVars=catVars, includeNA = FALSE,
+ExTable1<- CreateTableOne(vars=list2Vars, strata=ExFreq, data=MetaIdeal, factorVars=catVars, includeNA = FALSE,
   test = TRUE, testApprox = chisq.test, argsApprox = list(correct = TRUE),
   testExact = fisher.test, argsExact = list(workspace = 2 * 10^5),
   testNormal = oneway.test, argsNormal = list(var.equal = TRUE),
   testNonNormal = kruskal.test, argsNonNormal = list(NULL), smd = TRUE)
 ```
 
+Export to Microsoft Word
+```{r}
+ExTable1 <- print(ExTable1)
+
+# The script
+docx( ) %>% 
+     addFlexTable(ExTable1 %>%
+     FlexTable(header.cell.props = cellProperties( background.color = "#003366"),
+               header.text.props = textBold( color = "white" ),
+               add.rownames = TRUE ) %>%
+               setZebraStyle( odd = "#DDDDDD", even = "#FFFFFF" ) ) %>%
+     writeDoc(file = "~/Desktop/Extable1.docx")
+```
 
