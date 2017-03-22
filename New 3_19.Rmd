@@ -64,7 +64,7 @@ head(tax_table[,1:10]) #taxonomy results in error--may be source of error in mer
 Code from Hertzberg
 ```{r}
 library(readr)
-Sample_data <- (meta1k)
+Sample_data <- (MetaIdeal)
 sam_cov <- as.data.frame(sample_data)
 rownames(sam_cov) <- sam_cov$SampleID
 sd <- sample_data(sam_cov)

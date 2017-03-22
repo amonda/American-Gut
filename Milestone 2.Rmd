@@ -1,7 +1,7 @@
 ---
 title: "Milestone 2"
 author: "Alyssa Monda"
-date: "3/20/2017"
+date: "3/28/2017"
 output: html_document
 ---
 ```{r setup, include=FALSE}
@@ -37,6 +37,7 @@ Although this may seem like a significant change in plans, my purpose for invest
 
 ##Set File Paths 
 ```{r}
+#Ensure metadata and .biom file match for final analysis
 rich_dense_biom<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.biom")
 treefilename<- ("~/Desktop/Big Data/American-Gut/data/AG/BeyondBacteria/AmericanGutMetaphlanWGS.taxonomy.tree")
 meta<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.txt")
@@ -54,7 +55,8 @@ MetaIdeal <- read_excel("~/Desktop/Big Data Project- Ideal Meta Data Set.xlsx")
 
 Import BIOM file
 ```{r}
-#Data originally downloaded from ftp://ftp.microbio.me/AmericanGut/latest/04-meta/ag-gg-100nt.biom
+#Data originally downloaded from <https://github.com/wasade/American-Gut/tree/master/data/AG>
+#Make sure to pull the correct biom file to match the meta data down for analysis. 
 dat <- read_biom(rich_dense_biom)
 
 #Or
@@ -63,10 +65,10 @@ dat <- read_biom(rich_dense_biom)
 ```
 
 ##Analysis of MetaData
-First I will analyze the demographics of the sample. 
+First I will analyze the demographics of the sample. Before I can start I must recaegorize the variables and assign values to groups I am interested in. 
 
 ```{r}
-library(tableone)
+
 #Create a variable list which we want in Table 1
 listVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
 Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
@@ -82,8 +84,11 @@ Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PR
 
 #Continuous Variables
 contVars <- c(Age="AGE")
+SampleID <- c(SampleID="SampleID")
 
 #Would like to add chronic condition, but need to create a new category and combine all conditions 
+
+#Using "tableone" package
 
 #Define categorical variables
 CreateCatTable(vars= catVars, data=MetaIdeal, includeNA = FALSE, test = TRUE,testApprox = chisq.test, argsApprox = list(correct = TRUE),
@@ -152,6 +157,9 @@ Figure 6: Beta Diversity By Exercise Location
 ##Preliminary Synthesis/Discussion of Results
 
 ##Ancillary Questions
+-How do the skewed demographics affect the data? This group is mostly cacuasian and has at least a Bachelor's degreee or has attended graduate school. 
+-Should children be removed from the analysis?
+-Would including birth method/ method of feeding received as an infant change any of the results?
 
 ##References
 Put references for the exercise part for why I changed 
