@@ -43,7 +43,17 @@ Import Meta Data as DataFrame
 ```{r}
 library(readr)
 Meta <- read_delim("~/Desktop/ag_1k_fecal.txt", 
-    "\t", escape_double = FALSE, trim_ws = TRUE)
+    "\t", escape_double = FALSE, col_types = cols(AGE_YEARS = col_number(), 
+        BMI = col_number(), `ENA-BASE-COUNT` = col_number(), 
+        HEIGHT_CM = col_number(), VIOSCREEN_FIBER = col_number(),
+        VIOSCREEN_LOW_FAT_DAIRY_SERVING = col_number(), 
+        VIOSCREEN_LYSINE = col_number(), 
+        VIOSCREEN_MANNITOL = col_number(), 
+        VIOSCREEN_SFA100 = col_number(), 
+        VIOSCREEN_SFA170 = col_number(), 
+        VIOSCREEN_VEG5_DAY = col_number(), 
+        VIOSCREEN_VEGETABLE_SERVINGS = col_number(), 
+        chao1_1k = col_double()), trim_ws = TRUE)
 View(Meta)
 
 #Import Tree File ###Not Working 
@@ -60,6 +70,8 @@ Import OTU file
 file_path<- ("~/Desktop/ag_1k_fecal.biom")
 dat <- import_biom(file_path)
 
+#To fix error "input string 1 is invalid in this locale" run command "Sys.setlocale(locale="C")" in console and run command chunk again
+
 #Make Phyloseq values for separate pieces of the biom file 
 #Taxonomy
 taxonomy <- tax_table(dat)
@@ -69,7 +81,7 @@ OTU_table<- otu_table(dat)
 #MetaData
 #Create Phyloseq object for sample data so it can be merged
 SampleData<- sample_data(Meta)
-SD<-sam_data(Meta)
+SD<-sample_data(Meta)
 
 #Import the tree corresponding to this data ### Will Not work
 #tree<- tree
@@ -85,6 +97,8 @@ sample_names(otus)
 tt <- tax_table(taxonomy)
 ps <- phyloseq(otus, sd, tt) #Step to merge OTU,Taxonomy, and metadata 
 ps #View object and make sure it has all 3 parts
+
+
 ```
 
 ##Analysis of MetaData
@@ -92,12 +106,12 @@ First I will recode, clean, and analyze the demographics of the sample. Before I
 
 ```{r}
 
-#Recode levels for current variables to clean up data
+#Recode labels and levels for current variables to clean up data
 #Age
 #Should probably remove kids
-Age<-"AGE_YEARS"
-mean(as.numeric(Meta$AGE_YEARS))
-setnames(transactions, "Quantity", "Quant")
+Meta$Age<-Meta$"AGE_YEARS"
+
+#BMI- coded as wanted check implausible values after recoding
 
 #Sex 
 Sex<-"SEX"
@@ -110,8 +124,7 @@ cmc$Race <- factor(cmc$WifeEd,
                      labels = c("low","med low","med high","high"))
 class(cmc$WifeEd)
 summary(cmc$WifeEd)
-#BMI
-BMI_Cat<-"BMI_CAT"
+
 
 #Education 
 Education<-"LEVEL_OF_EDUCATION"
@@ -199,6 +212,12 @@ Education="LEVEL_OF_EDUCATION", Chronic=),
 LifeVars <- c(Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE"),
 ```
 
+Look for implausible values that need to be removed from the analysis, and observe distributions. 
+```{r}
+
+```
+
+
 Run initial analysis to see if recoding and grouping worked. 
 ```{r}
 #Using "tableone" package
@@ -212,6 +231,7 @@ CreateCatTable(vars= catVars, data=D, includeNA = FALSE, test = TRUE,testApprox 
 table1 <- CreateTableOne(vars = listVars, data = MetaIdeal, factorVars = catVars),
 table1,
 ```
+
 
 Create Table 1 for men and women and to compare their means and proportions to see if this is a more meaningful way to present the data. 
 ```{r}
@@ -270,12 +290,53 @@ ExTable3<- CreateTableOne(vars=Chronic, strata=ExFreq, data=MetaIdeal, factorVar
 ExTable3
 ```
 
-Figure 4: Richness by Exercise Frequency 
+##Microbiome Analysis
+Time to start the fun part! To begin, I will run a few investigatory plots to look at the sample data. 
+
+Figure 4:: Richness by Exercise Frequency 
 ```{r}
 plot_richness(ps, ExFreq, color = NULL, shape = NULL,
                title = NULL, scales = "free_y", nrow = 1, shsi = NULL,
              measures = NULL, sortby = NULL)
 ```
+
+General ordination plot (Need more info on which method to use for this type of plot)
+```{r}
+#Command for plot_ordination says to run this command prior to running the command
+Ordination<- ordinate(ps, method = "DCA", distance = "bray", formula = NULL),
+
+#Ordinaton plot
+plot_ordination(ps, Ordination, type = "taxa", axes = 1:2,
+  color ="EXERCISE_FREQUENCY", shape = NULL, label = NULL, title = NULL,
+  justDF = FALSE),
+```
+
+Barplot 
+```{r}
+#"Melt Data" as reccommended by plot_bar command to turn phyloseq object into a large table in order to build ggplot2 graphics from microbiome data represented as phyloseq objects
+meltps<- psmelt(ps)
+
+#Barplot
+plot_bar(ps, x="Taxa", y="Abundance", fill="EXERCISE_FREQUENCY",
+ title="Bar Plot", facet_grid=NULL)
+```
+
+
+Heatmap
+
+```{r}
+#Create a heatmap in ggplot using previously made data frame using psmelt command
+ggplot(meltps, aes(x = EXERCISE_FREQUENCY, 
+                y = OTU, 
+                fill = Abundance)) 
+
+#Hetmap using phyloseq
+plot_heatmap(ps, method = NULL, distance = NULL,
+  sample.label = ExFreq, taxa.label = "Rank 5", trans = log_trans(4),
+  max.label = 250, title = NULL, sample.order = NULL, taxa.order = NULL,
+  first.sample = NULL, first.taxa = NULL)
+```
+
 
 Figure 4: Alpha Diversity
 
