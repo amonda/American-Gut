@@ -49,8 +49,9 @@ Meta <- read_delim("~/Desktop/ag_1k_fecal.txt",
         VIOSCREEN_LOW_FAT_DAIRY_SERVING = col_number(), 
         VIOSCREEN_LYSINE = col_number(), 
         VIOSCREEN_MANNITOL = col_number(), 
-        VIOSCREEN_SFA100 = col_number(), 
-        VIOSCREEN_SFA170 = col_number(), 
+        VIOSCREEN_SFA100 = col_double(), 
+        VIOSCREEN_SFA40 = col_double(),#SFA4:0 Butyric Acid***
+        VIOSCREEN_SFA170 = col_double(), 
         VIOSCREEN_VEG5_DAY = col_number(), 
         VIOSCREEN_VEGETABLE_SERVINGS = col_number(), 
         chao1_1k = col_double()), trim_ws = TRUE)
@@ -59,6 +60,8 @@ View(Meta)
 #Import Tree File ###Not Working 
 #tree_file <-("~/Desktop/97_otus.tree")
 #treefilename = system.file("~/Desktop/97_otus.tree", "biom-tree.phy",  package="phyloseq")
+
+#What are parsing failures?
 ```
 
 Import OTU file
