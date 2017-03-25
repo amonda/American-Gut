@@ -34,88 +34,170 @@ Originally I had described using a different dataset to investigate the relation
 Although this may seem like a significant change in plans, my purpose for investigating the aforementioned data was to assess whether a relationship existed between BPT and chronic conditions, because there is an increase in BPT seen in animal models observing exercise and the gut microbiome. Little is known about the mechanisms involved in the relationship between exercise and reduction of inflammation. I hypothesize changes in the gut microbiome as one of the possible pathways for the anti-inflammatory effects of moderate intensity, routine, exercise. I knew this task would involve investing more time into cleaning and analyzing this data, its significance to my research interests made the additional effort worth it. To my knowledge there are only 3 studies published investigating the relationship between exercise and the gut microbiome. These studies have small sample sizes, and the methods are of varying quality. With the current plan to propose a longitudinal study to characterize the gut microbiome after participation in a routine, aerobic, exercise intervention for my dissertation, the data from this study will be a wonderful addition to my future proposal.
 
 ##Study Aims
-
-##Set File Paths 
-```{r}
-#Ensure metadata and .biom file match for final analysis
-rich_dense_biom<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.biom")
-treefilename<- ("~/Desktop/Big Data/American-Gut/data/AG/BeyondBacteria/AmericanGutMetaphlanWGS.taxonomy.tree")
-meta<- ("~/Desktop/Big Data/American-Gut/data/AG/AG_even1k.txt")
-```
+Aim 1: Characterize the alpha/beta diversity of the gut microbiome as it relates to frequency and location of exercise. 
+  
+Aim 2: If a relationship exists, investigate the associations between exercise and butyrate producing taxa.  
 
 ##Import Data
 Import Meta Data
 ```{r}
-MetaIdeal <- read_excel("~/Desktop/Big Data Project- Ideal Meta Data Set.xlsx")
-#View(MetaIdeal)
+library(readr)
+Meta <- read_delim("~/Desktop/ag_1k_fecal.txt", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(Meta)
 
-#For training turn this code on and the above off
-#meta1k <- read_excel("~/Desktop/Big Data/American-Gut/data/AG/Ag_MetaData1k-Trimmed.xlsx")
+#Import Tree File ###Not Working 
+#tree_file <-("~/Desktop/97_otus.tree")
+#treefilename = system.file("~/Desktop/97_otus.tree", "biom-tree.phy",  package="phyloseq")
 ```
 
-Import BIOM file
+Import OTU file
 ```{r}
-#Data originally downloaded from <https://github.com/wasade/American-Gut/tree/master/data/AG>
+#Data originally downloaded from <ftp://ftp.microbio.me/AmericanGut/latest>
 #Make sure to pull the correct biom file to match the meta data down for analysis. 
-dat <- read_biom(rich_dense_biom)
 
-#Or
-#import_biom(rich_dense_biom, parseFunction=parse_taxonomy_greengenes)
-# original command ->import_biom(rich_dense_biom, treefilename, parseFunction=parse_taxonomy_greengenes) tree file name should be included but resulted in an error and failed to import?
+# To read in original .biom file use command below 
+file_path<- ("~/Desktop/ag_1k_fecal.biom")
+dat <- import_biom(file_path)
+
+#Make Phyloseq values
+#Taxonomy
+taxonomy <- tax_table(dat)
+#OTU
+OTU_table<- otu_table(dat)
+#MetaData
+SampleData<- sample_data(Meta)
+SD<-sam_data(Meta)
+#Tree
+#tree<- tree
+
+#Merge
+Sample_data <- (SD)
+sam_cov <- as.data.frame(Sample_data)
+rownames(sam_cov) <- sam_cov$"#SampleID"
+sd <- sample_data(sam_cov)
+sample_names(sd)
+otus <- otu_table(OTU_table, taxa_are_rows = TRUE)
+sample_names(otus)
+tt <- tax_table(taxonomy)
+ps <- phyloseq(otus, sd, tt)
+ps
 ```
+
 
 ##Analysis of MetaData
-First I will analyze the demographics of the sample. Before I can start I must recaegorize the variables and assign values to groups I am interested in. 
+First I will recode, clean, and analyze the demographics of the sample. Before I can start I must recaegorize the variables and assign values to groups I am interested in. 
 
 ```{r}
-
 #Create a variable list which we want in Table 1
-listVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
-Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
+listVars <- c(Age="AGE_YEARS", AgeCat="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE", Healthy="SUBSET_HEALTHY")
 
-list2Vars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
-Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
+list2Vars <- c(Age_Cat="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE", Healthy="SUBSET_HEALTHY")
 
 ExFreq <-c(ExFreq= "EXERCISE_FREQUENCY")
+SampleID <- c(SampleID="SampleID")
+
+#Recode levels for current variables to clean up data
+#Age
+
+#Sex 
+
+#Race 
+
+#BMI
+
+#Education 
+
+#Antibiotics 
+
+#Probiotics
+
+#ExFreq 
+
+#ExLoc 
+
+#PoolFreq 
+
+#Diet
+
+
+
+
+
+
+#Chronic Illness
+#recode each variable as 0 or 1 and then merge? like if then statements 
+Chronic<-  c(Cancer="CANCER", Kidney="KIDNEY_DISEASE", DM="DIABETES", Lung="LUNG_DISEASE", ASD="ASD", IBS="IBS", IBD="IBD", Liver="LIVER_DISEASE",  CVD="CARDIOVASCULAR_DISEASE", AutoImmune="AUTOIMMUNE", Alzheimers="ALZHEIMERS", Allergies="SEASONAL_ALLERGIES", Thyroid="THYROID", Skin="SKIN_CONDITION")
+
+
+#Add a variable to the dataset called chronic
+MetaIdeal$ChronicIll <- MetaIdeal$CANCER + MetaIdeal$KIDNEY_DISEASE + MetaIdeal$DIABETES + MetaIdeal$LUNG_DISEASE + MetaIdeal$ASD + MetaIdeal$IBS + MetaIdeal$IBD + MetaIdeal$LIVER_DISEASE + MetaIdeal$CARDIOVASCULAR_DISEASE + MetaIdeal$SEASONAL_ALLERGIES + MetaIdeal$THYROID + MetaIdeal$SKIN_CONDITION
+
+
+#Merge various diseases into that one variable
+
+#Recode to combine levels of the data
+MetaIdeal$ChronicIll <- levels(1,2,3,4)
+levels(1) <- c("Diagnosed by a medical professional doctor, physician assistant","Diagnosed by an alternative medicine practitioner")
+levels(2) <- c("Self-diagnosed")
+levels(3) <- c("I do not have this condition")
+levels(4) <- c("Unknown", "Unspecified")
+
+
+#Logical Operators??????? Hertzberg
+For (ChronicIll in c(MetaIdeal$CANCER, MetaIdeal$KIDNEY_DISEASE , MetaIdeal$DIABETES , MetaIdeal$LUNG_DISEASE , MetaIdeal$ASD , MetaIdeal$IBS , MetaIdeal$IBD , MetaIdeal$LIVER_DISEASE , MetaIdeal$CARDIOVASCULAR_DISEASE , MetaIdeal$SEASONAL_ALLERGIES , MetaIdeal$THYROID , MetaIdeal$SKIN_CONDITION) {
+     v=get("Diagnosed by a medical professional doctor, physician assistant","Diagnosed by an alternative medicine practitioner")
+     assign(v to MetaIdeal$ChronicIll)
+     u=get("Self-diagnosed")
+     assign(u to MetaIdeal$ChronicIll)
+}
 
 #Categorical Variables
 catVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
-Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
+Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE", Healthy="SUBSET_HEALTHY")
 
 #Continuous Variables
-contVars <- c(Age="AGE")
-SampleID <- c(SampleID="SampleID")
+contVars <- c(Age="AGE"),
+  
+#Demographic Variables
+DemVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
+Education="LEVEL_OF_EDUCATION", Chronic=),
 
-#Would like to add chronic condition, but need to create a new category and combine all conditions 
+#Lifestyle Variables
+LifeVars <- c(Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE"),
+```
 
+Run initial analysis to see if recoding and grouping worked. 
+```{r}
 #Using "tableone" package
 
 #Define categorical variables
-CreateCatTable(vars= catVars, data=MetaIdeal, includeNA = FALSE, test = TRUE,testApprox = chisq.test, argsApprox = list(correct = TRUE),
+CreateCatTable(vars= catVars, data=D, includeNA = FALSE, test = TRUE,testApprox = chisq.test, argsApprox = list(correct = TRUE),
   testExact = fisher.test, argsExact = list(workspace = 2 * 10^5),
   smd = TRUE)
 
 #Total Population Table 1
-table1 <- CreateTableOne(vars = listVars, data = MetaIdeal, factorVars = catVars)
-table1
+table1 <- CreateTableOne(vars = listVars, data = MetaIdeal, factorVars = catVars),
+table1,
 ```
-
 
 Create Table 1 for men and women and to compare their means and proportions to see if this is a more meaningful way to present the data. 
 ```{r}
 # Create table by exercise frequency category 
 #Define categorical variables
 
-ExTable1<- CreateTableOne(vars=list2Vars, strata=ExFreq, data=MetaIdeal, factorVars=catVars, includeNA = FALSE,
+ExTable1<- CreateTableOne(vars=list2Vars, strata=ExFreq, data=D, factorVars=catVars, includeNA = FALSE,
   test = TRUE, testApprox = chisq.test, argsApprox = list(correct = TRUE),
   testExact = fisher.test, argsExact = list(workspace = 2 * 10^5),
   testNormal = oneway.test, argsNormal = list(var.equal = TRUE),
-  testNonNormal = kruskal.test, argsNonNormal = list(NULL), smd = TRUE)
+  testNonNormal = kruskal.test, argsNonNormal = list(NULL), smd = TRUE),
 ```
 
 Export to Microsoft Word
 ```{r}
-ExTable1 <- print(ExTable1)
+ExTable1 <- print(ExTable1),
 
 # The script
 docx( ) %>% 
@@ -124,7 +206,7 @@ docx( ) %>%
                header.text.props = textBold( color = "white" ),
                add.rownames = TRUE ) %>%
                setZebraStyle( odd = "#DDDDDD", even = "#FFFFFF" ) ) %>%
-     writeDoc(file = "~/Desktop/Extable1.docx")
+     writeDoc(file = "~/Desktop/Extable1.docx"),
 ```
 ***Need to recode categories for variables, and modify code to delete test column and add a total. Figure out how to make continuous variables show mean and SD. 
 Also figure out how p value was calculated. 
@@ -146,13 +228,25 @@ Figure 2: Lifestyle habits by Exercise Frequency
 
 ```
 
-Figure 3: Alpha Diversity
 
-Figure 4: 
+Figure 3: Chronic Conditions by Exercise Frequency
+```{r}
+#Investigate Chronic Condition Frequencies
+ExTable3<- CreateTableOne(vars=Chronic, strata=ExFreq, data=MetaIdeal, factorVars=catVars, includeNA = FALSE,
+  test = TRUE, testApprox = chisq.test, argsApprox = list(correct = TRUE),
+  testExact = fisher.test, argsExact = list(workspace = 2 * 10^5),
+  testNormal = oneway.test, argsNormal = list(var.equal = TRUE),
+  testNonNormal = kruskal.test, argsNonNormal = list(NULL), smd = TRUE),
+ExTable3
+```
 
-Figure 5: Beta Diversity By Exercise Frequency
+Figure 4: Alpha Diversity
 
-Figure 6: Beta Diversity By Exercise Location
+Figure 5: 
+
+Figure 6: Beta Diversity By Exercise Frequency
+
+Figure 7: Beta Diversity By Exercise Location
 
 ##Preliminary Synthesis/Discussion of Results
 
