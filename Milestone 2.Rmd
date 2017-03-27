@@ -24,11 +24,6 @@ library(ReporteRs)
 library(magrittr)
 library(plyr)
 ```
-##Directions
-
-For this milestone we expect that you will have acquired, cleaned, and explored your dataset. You will document these activities in your files. You will also explain in detail the components of your final analysis. If you have deviated from your original plans, please describe what is different and the reasons that have led to this. You will explain your workflow, that is, how you went from acquiring your data to getting (close to) an answer to your question. Are there ancillary questions that have arisen as you have gone through this process? What are they?
-
-As a ballpark number, this document should be about 10 pages of text, tables, and figures.
 
 ##Change in Plans
 Originally I had described using a different dataset to investigate the relationship between butyrate producing taxa (BPT) of the gut microbiome and inflammatory conditions. After beginning the data wrangling process I discovered the variables within the dataset did not match up in a way that made answering my question possible. The majority of the samples were from the oral microbiome and very few individuals had a positive value for an inflammatory disease as well as a gut sample, most of the time they only had oral samples on these individuals. While looking for a new dataset I stumbled upon the data from American Gut and realized they had 3 variables relating to physical activity. 
@@ -109,6 +104,8 @@ Meta$Education[Meta$Education=="Some graduate school or professional"] <- "Under
 Meta$Education[Meta$Education=="Graduate or Professional degree"] <- "Graduate or Professional degree"
 Meta$Education[Meta$Education=="Uknown"] <- "NA"
 Meta$Education[Meta$Education=="Unspecified"] <- "NA"
+
+#Do I want to include country of birth, or economic region?
 
 #Antibiotics 
 Meta$Antibiotics<-Meta$"ANTIBIOTIC_HISTORY"
@@ -307,8 +304,7 @@ Meta$Skin[Meta$Skin=="no_data"] <- "NA"
 
 ```
 
-Look for implausible values that need to be removed from the analysis, and observe distributions. 
-Age, BMI
+Look for implausible values in numeric vasriables that need to be removed from the analysis, and observe distributions. 
 ```{r}
 #Histogram for Age
 hist(Meta$Age)
@@ -330,62 +326,26 @@ plot(Meta$BMI, Meta$Age)
 Now I will create lists of variables to make analysis easier for the groupings I know I want to use. 
 ```{r}
 
-#Create a variable list which we want in Table 1
-listVars <- c(Age="AGE_YEARS", AgeCat="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
-Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE", Healthy="SUBSET_HEALTHY")
+#Create a list of all variables of interest
+listVars <- c(Age="Age", AgeCat="AGE_CAT", Sex="Sex", Race="Race", BMI="BMI", Education="Education", Antibiotics="Antibiotics", Probiotics="Probiotics", ExFreq="ExFreq", ExLoc="ExLoc", PoolFreq="PoolFreq", Diet="Diet", Healthy="Healthy", Cancer="Cancer", Kidney="Cancer", DM="DM", Lung="Lung", CVD="CVD", AD="AD", Allergies="Allergies", AutoImm="AutoImm", ASD="ASD", IBD="IBD", IBS="IBS", Liver="Liver", Thyroid="Thyroid", Skin="Skin")
 
-list2Vars <- c(Age_Cat="AGE_CAT", Sex="SEX", Race="RACE", BMI_Cat="BMI_CAT", 
-Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE", Healthy="SUBSET_HEALTHY")
+#Demographic Variables for Table 1
+DemVars <- c(Age="Age", AgeCat="AGE_CAT", Sex="Sex", Race="Race", BMI="BMI", Education="Education", Healthy="Healthy")
 
+#Variables to describe lifestyle
+LifeVars<- c(Antibiotics="Antibiotics", Probiotics="Probiotics", ExLoc="ExLoc", PoolFreq="PoolFreq", Diet="Diet")
 
-
-#Chronic Illness
-#set levels to integers, then use unit command in tidr, then recode levels as 0 and >=1
-#recode each variable as 0 or 1 and then merge? like if then statements 
-Chronic<-  c(Cancer="CANCER", Kidney="KIDNEY_DISEASE", DM="DIABETES", Lung="LUNG_DISEASE", ASD="ASD", IBS="IBS", IBD="IBD", Liver="LIVER_DISEASE",  CVD="CARDIOVASCULAR_DISEASE", AutoImmune="AUTOIMMUNE", Alzheimers="ALZHEIMERS", Allergies="SEASONAL_ALLERGIES", Thyroid="THYROID", Skin="SKIN_CONDITION")
-
-MetaIdeal$Chronic <- unite(MetaIdeal, "CANCER", "KIDNEY_DISEASE", "DIABETES", "LUNG_DISEASE", "ASD", "IBS", "IBD", "LIVER_DISEASE",  "CARDIOVASCULAR_DISEASE", "AUTOIMMUNE", "ALZHEIMERS", "SEASONAL_ALLERGIES", "THYROID", "SKIN_CONDITION")
-
-
-#Add a variable to the dataset called chronic
-MetaIdeal$ChronicIll <- MetaIdeal$CANCER + MetaIdeal$KIDNEY_DISEASE + MetaIdeal$DIABETES + MetaIdeal$LUNG_DISEASE + MetaIdeal$ASD + MetaIdeal$IBS + MetaIdeal$IBD + MetaIdeal$LIVER_DISEASE + MetaIdeal$CARDIOVASCULAR_DISEASE + MetaIdeal$SEASONAL_ALLERGIES + MetaIdeal$THYROID + MetaIdeal$SKIN_CONDITION
-
-
-#Merge various diseases into that one variable
-
-#Recode to combine levels of the data
-MetaIdeal$ChronicIll <- levels(1,2,3,4)
-levels(1) <- c("Diagnosed by a medical professional doctor, physician assistant","Diagnosed by an alternative medicine practitioner")
-levels(2) <- c("Self-diagnosed")
-levels(3) <- c("I do not have this condition")
-levels(4) <- c("Unknown", "Unspecified")
-
-
-#Logical Operators??????? Hertzberg
-For (ChronicIll in c(MetaIdeal$CANCER, MetaIdeal$KIDNEY_DISEASE , MetaIdeal$DIABETES , MetaIdeal$LUNG_DISEASE , MetaIdeal$ASD , MetaIdeal$IBS , MetaIdeal$IBD , MetaIdeal$LIVER_DISEASE , MetaIdeal$CARDIOVASCULAR_DISEASE , MetaIdeal$SEASONAL_ALLERGIES , MetaIdeal$THYROID , MetaIdeal$SKIN_CONDITION) {
-     v=get("Diagnosed by a medical professional doctor, physician assistant","Diagnosed by an alternative medicine practitioner")
-     assign(v to MetaIdeal$ChronicIll)
-     u=get("Self-diagnosed")
-     assign(u to MetaIdeal$ChronicIll)
-}
+#Specific Illnesses of the sample
+Chronic<- c(Cancer="Cancer", Kidney="Cancer", DM="DM", Lung="Lung", CVD="CVD", AD="AD", Allergies="Allergies", AutoImm="AutoImm", ASD="ASD", IBD="IBD", IBS="IBS", Liver="Liver", Thyroid="Thyroid", Skin="Skin")
 
 #Categorical Variables
-catVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
-Education="LEVEL_OF_EDUCATION", Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE", Healthy="SUBSET_HEALTHY")
+catVars <- c(Sex="Sex", Race="Race", Education="Education", Antibiotics="Antibiotics", Probiotics="Probiotics", ExFreq="ExFreq", ExLoc="ExLoc", PoolFreq="PoolFreq", Diet="Diet", Healthy="Healthy", Cancer="Cancer", Kidney="Cancer", DM="DM", Lung="Lung", CVD="CVD", AD="AD", Allergies="Allergies", AutoImm="AutoImm", ASD="ASD", IBD="IBD", IBS="IBS", Liver="Liver", Thyroid="Thyroid", Skin="Skin")
 
 #Continuous Variables
-contVars <- c(Age="AGE")
-  
-#Demographic Variables
-DemVars <- c(Age="AGE_CAT", Sex="SEX", Race="RACE", BMI="BMI_CAT", 
-Education="LEVEL_OF_EDUCATION", Chronic=)
-
-#Lifestyle Variables
-LifeVars <- c(Antibiotics="ANTIBIOTIC_HISTORY", Probiotics="PROBIOTIC_FREQUENCY",ExFreq= "EXERCISE_FREQUENCY", ExLoc="EXERCISE_LOCATION", PoolFreq="POOL_FREQUENCY", Diet="DIET_TYPE")
+contVars <- c(Age="Age", BMI="BMI")
 ```
 
-
-Now that the data is reorganized and cleaned it is time to run an initial analysis to see if recoding and grouping worked. 
+Now that the data is reorganized and cleaned it is time to run an initial analysis to (1) see if recoding and grouping worked and (2) look at intitial analyais of the sample data. I will do so by group of self reported Exercise Frequency. 
 ```{r}
 #Using "tableone" package
 
@@ -395,8 +355,8 @@ CreateCatTable(vars= catVars, data=Meta, includeNA = FALSE, test = TRUE,testAppr
   smd = TRUE)
 
 #Total Population Table 1
-table1 <- CreateTableOne(vars = listVars, data = MetaIdeal, factorVars = catVars),
-table1,
+table1 <- CreateTableOne(vars = listVars, data = MetaIdeal, factorVars = catVars)
+table1
 ```
 
 
