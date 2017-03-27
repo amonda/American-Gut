@@ -112,32 +112,46 @@ Meta$Education[Meta$Education=="Uknown"] <- "Unknown"
 Meta$Education[Meta$Education=="Unspecified"] <- "Unknown"
 
 #Antibiotics 
-Antibiotics<-"ANTIBIOTIC_HISTORY"
-Meta$Antibiotics[Meta$Antibiotics=="Week"] <- "Week"
-Meta$Antibiotics[Meta$Antibiotics=="Month"] <- "Month"
+Meta$Antibiotics<-Meta$"ANTIBIOTIC_HISTORY"
 Meta$Antibiotics[Meta$Antibiotics=="6 months"] <- "6 Months"
-Meta$Antibiotics[Meta$Antibiotics=="Year"] <- "Year"
-Meta$Antibiotics[Meta$Antibiotics=="Uknown"] <- "More than 1 year"
+Meta$Antibiotics[Meta$Antibiotics=="Uknown"] <- "> 1 year"
 Meta$Antibiotics[Meta$Antibiotics=="Uknown"] <- "Unknown"
 Meta$Antibiotics[Meta$Antibiotics=="Unspecified"] <- "Unknown"
 
 #Probiotics
-Probiotics<- "PROBIOTIC_FREQUENCY"
+Meta$Probiotics<- Meta$"PROBIOTIC_FREQUENCY"
+Meta$Probiotics[Meta$Probiotics=="Unknown"] <- "Unknown"
+Meta$Probiotics[Meta$Probiotics=="Unspecified"] <- "Unknown"
 
 #ExFreq 
-ExFreq <-c(ExFreq= "EXERCISE_FREQUENCY")
+Meta$ExFreq <-Meta$"EXERCISE_FREQUENCY"
+Meta$ExFreq[Meta$ExFreq=="Unknown"] <- "Unknown"
+Meta$ExFreq[Meta$ExFreq=="Unspecified"] <- "Unknown"
 
 #ExLoc 
-ExLoc<- "EXERCISE_LOCATION"
+Meta$ExLoc<- Meta$"EXERCISE_LOCATION"
+Meta$ExLoc[Meta$ExLoc=="Depends on the season"] <- "Both"
+Meta$ExLoc[Meta$ExLoc=="Unknown"] <- "Unknown"
+Meta$ExLoc[Meta$ExLoc=="Unspecified"] <- "Unknown"
 
 #PoolFreq 
-PoolFreq<- "POOL_FREQUENCY"
+Meta$PoolFreq<- Meta$"POOL_FREQUENCY"
+Meta$PoolFreq[Meta$PoolFreq=="Unknown"] <- "Unknown"
+Meta$PoolFreq[Meta$PoolFreq=="Unspecified"] <- "Unknown"
 
 #Diet
-Diet<-"DIET_TYPE"
+Meta$Diet<- Meta$"DIET_TYPE"
+Meta$Diet[Meta$Diet=="Unknown"] <- "Unknown"
+Meta$Diet[Meta$Diet=="Unspecified"] <- "Unknown"
 
 #Healthy = No chronic Illness
-Healthy<-"SUBSET_HEALTHY"
+Meta$Healthy<-Meta$"SUBSET_HEALTHY"
+Meta$Healthy[Meta$Healthy=="True"] <- "Healthy"
+Meta$Healthy[Meta$Healthy=="False"] <- "Chronic Illness"
+Meta$Healthy[Meta$Healthy=="true"] <- "Healthy"
+Meta$Healthy[Meta$Healthy=="false"] <- "Chronic Illness"
+Meta$Healthy[Meta$Healthy=="Uknown"] <- "Unknown"
+Meta$Healthy[Meta$Healthy=="Unspecified"] <- "Unknown"
 
 ```
 
