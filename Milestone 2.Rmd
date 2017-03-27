@@ -72,7 +72,6 @@ It is important to clean the metadata prior to merging it with the data from the
 
 #Recode labels and levels for current variables to clean up data
 #Age
-#Should probably remove kids from the analysis but I'm not sure how this would then affect the merge to the .biom file. Ask about this!*
 Meta$Age<-Meta$"AGE_YEARS"
 
 #BMI- coded as wanted check implausible values after recoding other variables
@@ -82,8 +81,8 @@ Meta$Sex<-Meta$"SEX"
 Meta$Sex[Meta$Sex=="male"] <- "Male"
 Meta$Sex[Meta$Sex=="female"] <- "Female"
 Meta$Sex[Meta$Sex=="other"] <- "Other"
-Meta$Sex[Meta$Sex=="Unknown"] <- "Unknown"
-Meta$Sex[Meta$Sex=="unspecified"] <- "Unknown"
+Meta$Sex[Meta$Sex=="Unknown"] <- "NA"
+Meta$Sex[Meta$Sex=="unspecified"] <- "NA"
 Meta$Sex
 
 #Race 
@@ -94,8 +93,8 @@ Meta$Race[Meta$Race=="African American"] <- "Black"
 Meta$Race[Meta$Race=="Hispanic"] <- "Hispanic"
 Meta$Race[Meta$Race=="Asian or Pacific Islander"] <- "Other"
 Meta$Race[Meta$Race=="Other"] <- "Other"
-Meta$Race[Meta$Race=="Unspecified"] <- "Unknown"
-Meta$Race[Meta$Race=="Unknown"] <- "Unknown"
+Meta$Race[Meta$Race=="Unspecified"] <- "NA"
+Meta$Race[Meta$Race=="Unknown"] <- "NA"
 Meta$Race
 
 #Education 
@@ -108,41 +107,41 @@ Meta$Education[Meta$Education=="Associate's degree"] <- "Undergraduate degree"
 Meta$Education[Meta$Education=="Bachelor's degree"] <- "Undergraduate degree"
 Meta$Education[Meta$Education=="Some graduate school or professional"] <- "Undergraduate degree"
 Meta$Education[Meta$Education=="Graduate or Professional degree"] <- "Graduate or Professional degree"
-Meta$Education[Meta$Education=="Uknown"] <- "Unknown"
-Meta$Education[Meta$Education=="Unspecified"] <- "Unknown"
+Meta$Education[Meta$Education=="Uknown"] <- "NA"
+Meta$Education[Meta$Education=="Unspecified"] <- "NA"
 
 #Antibiotics 
 Meta$Antibiotics<-Meta$"ANTIBIOTIC_HISTORY"
 Meta$Antibiotics[Meta$Antibiotics=="6 months"] <- "6 Months"
 Meta$Antibiotics[Meta$Antibiotics=="Uknown"] <- "> 1 year"
-Meta$Antibiotics[Meta$Antibiotics=="Uknown"] <- "Unknown"
-Meta$Antibiotics[Meta$Antibiotics=="Unspecified"] <- "Unknown"
+Meta$Antibiotics[Meta$Antibiotics=="Uknown"] <- "NA"
+Meta$Antibiotics[Meta$Antibiotics=="Unspecified"] <- "NA"
 
 #Probiotics
 Meta$Probiotics<- Meta$"PROBIOTIC_FREQUENCY"
-Meta$Probiotics[Meta$Probiotics=="Unknown"] <- "Unknown"
-Meta$Probiotics[Meta$Probiotics=="Unspecified"] <- "Unknown"
+Meta$Probiotics[Meta$Probiotics=="Unknown"] <- "NA"
+Meta$Probiotics[Meta$Probiotics=="Unspecified"] <- "NA"
 
 #ExFreq 
 Meta$ExFreq <-Meta$"EXERCISE_FREQUENCY"
-Meta$ExFreq[Meta$ExFreq=="Unknown"] <- "Unknown"
-Meta$ExFreq[Meta$ExFreq=="Unspecified"] <- "Unknown"
+Meta$ExFreq[Meta$ExFreq=="Unknown"] <- "NA"
+Meta$ExFreq[Meta$ExFreq=="Unspecified"] <- "NA"
 
 #ExLoc 
 Meta$ExLoc<- Meta$"EXERCISE_LOCATION"
 Meta$ExLoc[Meta$ExLoc=="Depends on the season"] <- "Both"
-Meta$ExLoc[Meta$ExLoc=="Unknown"] <- "Unknown"
-Meta$ExLoc[Meta$ExLoc=="Unspecified"] <- "Unknown"
+Meta$ExLoc[Meta$ExLoc=="Unknown"] <- "NA"
+Meta$ExLoc[Meta$ExLoc=="Unspecified"] <- "NA"
 
 #PoolFreq 
 Meta$PoolFreq<- Meta$"POOL_FREQUENCY"
-Meta$PoolFreq[Meta$PoolFreq=="Unknown"] <- "Unknown"
-Meta$PoolFreq[Meta$PoolFreq=="Unspecified"] <- "Unknown"
+Meta$PoolFreq[Meta$PoolFreq=="Unknown"] <- "NA"
+Meta$PoolFreq[Meta$PoolFreq=="Unspecified"] <- "NA"
 
 #Diet
 Meta$Diet<- Meta$"DIET_TYPE"
-Meta$Diet[Meta$Diet=="Unknown"] <- "Unknown"
-Meta$Diet[Meta$Diet=="Unspecified"] <- "Unknown"
+Meta$Diet[Meta$Diet=="Unknown"] <- "NA"
+Meta$Diet[Meta$Diet=="Unspecified"] <- "NA"
 
 #Healthy = No chronic Illness
 Meta$Healthy<-Meta$"SUBSET_HEALTHY"
@@ -150,15 +149,29 @@ Meta$Healthy[Meta$Healthy=="True"] <- "Healthy"
 Meta$Healthy[Meta$Healthy=="False"] <- "Chronic Illness"
 Meta$Healthy[Meta$Healthy=="true"] <- "Healthy"
 Meta$Healthy[Meta$Healthy=="false"] <- "Chronic Illness"
-Meta$Healthy[Meta$Healthy=="Uknown"] <- "Unknown"
-Meta$Healthy[Meta$Healthy=="Unspecified"] <- "Unknown"
+Meta$Healthy[Meta$Healthy=="Uknown"] <- "NA"
+Meta$Healthy[Meta$Healthy=="Unspecified"] <- "NA"
 
 ```
 
 Look for implausible values that need to be removed from the analysis, and observe distributions. 
-Age, BMI, Age by physical activity
+Age, BMI
 ```{r}
+#Histogram for Age
+hist(Meta$Age)
+#Should probably remove kids from the analysis but I'm not sure how this would then affect the merge to the .biom file. Ask about this!*
 
+#Histogram for BMI
+hist(Meta$BMI)
+
+#Remove implausible values BMI. Remove any value over 100.Seems mistakes are all in the thousands or higher. New max is 94.48. Need to find method for what is implausible. Obese Class III is >40. Best I have found is any score 3 standard deviations from the mean.<http://apps.who.int/bmi/index.jsp?introPage=intro_3.html> I can also use BMI_CAT for classifications. 
+Meta$BMI[Meta$BMI > 100] <- NA
+
+# Re-Do Histogram for BMI
+hist(Meta$BMI)
+
+#Scatterplot BMI*AGE
+plot(Meta$BMI, Meta$Age)
 ```
 
 Now I will create lists of variables to make analysis easier for the groupings I know I want to use. 
